@@ -1,8 +1,7 @@
 # q3ML
 
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
-[![R-CMD-check](https://github.com/wilsontom/q3ML/workflows/R-CMD-check/badge.svg)](https://github.com/wilsontom/q3ML/actions)
-[![codecov](https://codecov.io/gh/wilsontom/q3ML/branch/main/graph/badge.svg?token=D0wfktJfzp)](https://codecov.io/gh/wilsontom/q3ML)
+[![R-CMD-check.yaml](https://github.com/wilsontom/q3ML/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/wilsontom/q3ML/actions/workflows/R-CMD-check.yaml) [![test-coverage.yaml](https://github.com/wilsontom/q3ML/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/wilsontom/q3ML/actions/workflows/test-coverage.yaml)
 ![License](https://img.shields.io/badge/license-GNU%20GPL%20v3.0-blue.svg "GNU GPL v3.0")
 
 `q3ML` opens and parses selective reaction monitoring (SRM) `.mzML` files from Thermo triple quadrupole instruments using direct XML and binary decoding in R. It is aimed at cases where an `.mzML` file is structurally valid but `mzR` cannot decode the chromatogram binary arrays produced by newer ProteoWizard conversions.
