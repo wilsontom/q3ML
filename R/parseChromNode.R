@@ -13,15 +13,62 @@
 
 parseChromNode <- function(x, mode)
 {
+  chrom_node <- if (inherits(x, "xml_node") &&
+                    identical(xml2::xml_name(x), "chromatogram")) {
+    x
+  } else if (length(x) > 0 && inherits(x[[1]], "xml_node")) {
+    xml2::xml_parent(x[[1]])
+  } else {
+    stop("`x` must describe a chromatogram node.", call. = FALSE)
+  }
+
+  binaryDataArray <- xml2::xml_find_all(
+    chrom_node,
+    "./d1:binaryDataArrayList/d1:binaryDataArray"
+  )
+
+  array_by_accession <- function(accession)
+  {
+    matches <- purrr::keep(binaryDataArray, ~ {
+      accessions <- xml2::xml_find_all(.x, "./d1:cvParam") %>%
+        xml2::xml_attrs() %>%
+        dplyr::bind_rows() %>%
+        dplyr::pull(accession)
+
+      accession %in% accessions
+    })
+
+    if (length(matches) != 1) {
+      stop("Unable to find a unique binary data array in the chromatogram.",
+           call. = FALSE)
+    }
+
+    matches[[1]]
+  }
+
+  parse_array <- function(binary_array)
+  {
+    array_attr <-
+      xml2::xml_find_all(binary_array, "./d1:cvParam") %>%
+      xml2::xml_attrs() %>%
+      dplyr::bind_rows() %>%
+      dplyr::select(dplyr::any_of(c("cvRef", "accession", "name"))) %>%
+      dplyr::filter(!is.na(cvRef))
+
+    array_raw <- xml2::xml_text(xml2::xml_find_first(binary_array, "./d1:binary"))
+
+    list(attributes = array_attr, raw = array_raw)
+  }
+
   if (mode == 'TIC') {
-    binaryDataArray <- xml2::xml_children(x[[2]])
     polarity <- -1
   }
 
   if (mode == 'SRM') {
-    binaryDataArray <- xml2::xml_children(x[[5]])
-
-    plong <- xml2::xml_attrs(x[[2]])[['name']]
+    plong <- xml2::xml_find_first(
+      chrom_node,
+      "./d1:cvParam[@name='positive scan' or @name='negative scan']"
+    ) %>% xml2::xml_attr("name")
 
     if (plong == 'positive scan') {
       polarity <- 1
@@ -31,31 +78,18 @@ parseChromNode <- function(x, mode)
       polarity <- 0
     }
 
+    if (is.na(plong)) {
+      polarity <- NA_integer_
+    }
+
   }
 
-
-  time_array <- binaryDataArray[[1]] %>% xml2::xml_children()
-  intensity_array <- binaryDataArray[[2]] %>% xml2::xml_children()
-
-
-  time_attr <-
-    xml2::xml_attrs(time_array) %>% dplyr::bind_rows() %>%
-    dplyr::select(cvRef, accession, name) %>% dplyr::filter(!is.na(cvRef))
-
-  time_raw <- xml2::xml_text(time_array[[4]])
-
-  intensity_attr <-
-    xml2::xml_attrs(intensity_array) %>% dplyr::bind_rows() %>%
-    dplyr::select(cvRef, accession, name) %>% dplyr::filter(!is.na(cvRef))
-
-  intensity_raw <- xml2::xml_text(intensity_array[[4]])
-
+  time_array <- parse_array(array_by_accession("MS:1000595"))
+  intensity_array <- parse_array(array_by_accession("MS:1000515"))
 
   chrom_list <- list(
-    time = list(attributes = time_attr,
-                raw = time_raw),
-    intensity = list(attributes = intensity_attr,
-                     raw = intensity_raw),
+    time = time_array,
+    intensity = intensity_array,
     polarity = polarity
   )
 
