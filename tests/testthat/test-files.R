@@ -19,6 +19,22 @@ write_fixture_variant <- function(path, edit_xml)
   variant
 }
 
+normalise_chromatogram <- function(chromatogram)
+{
+  time_name <- intersect(names(chromatogram), c("time", "rtime"))
+  intensity_name <- setdiff(names(chromatogram), time_name)
+
+  data.frame(
+    time = chromatogram[[time_name]],
+    intensity = chromatogram[[intensity_name]]
+  )
+}
+
+normalise_chromatograms <- function(chromatograms)
+{
+  purrr::map(chromatograms, normalise_chromatogram)
+}
+
 test_that("file versions", {
   suppressWarnings(testthat::skip_if_not_installed("mzR"))
 
@@ -40,7 +56,10 @@ test_that("file versions", {
   mzr_result <- mzR::openMSfile(new_fixture)
   on.exit(mzR::close(mzr_result), add = TRUE)
 
-  expect_identical(mzR::chromatograms(mzr_result), q3ml_result$peaks)
+  expect_identical(
+    normalise_chromatograms(mzR::chromatograms(mzr_result)),
+    normalise_chromatograms(q3ml_result$peaks)
+  )
   expect_identical(mzR::chromatogramHeader(mzr_result), q3ml_result$header)
 })
 
