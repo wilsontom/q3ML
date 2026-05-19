@@ -15,18 +15,18 @@ openFile <- function(mzml_file)
   pwiz_version <-
     xml_tmp %>% xml2::xml_find_all(., "//d1:software") %>% xml2::xml_attrs() %>%
     dplyr::bind_rows() %>% dplyr::filter(id == 'pwiz') %>%
-    dplyr::select(version) %>% dplyr::pull() %>%
-    stringr::str_split(., '\\.')
+    dplyr::pull(version)
 
-  pwiz_version_major <- paste0(pwiz_version[[1]][1], '.', pwiz_version[[1]][2]) %>% as.numeric(.)
-  pwiz_version_minor <- pwiz_version[[1]][[3]] %>% as.numeric()
+  if (length(pwiz_version) != 1 || is.na(pwiz_version)) {
+    stop("Unable to determine the ProteoWizard version for this mzML file.",
+         call. = FALSE)
+  }
 
-  if(pwiz_version_major >= 3 &
-     pwiz_version_minor <= 20000) {
+  if (utils::compareVersion(pwiz_version, "3.0.20000") <= 0) {
     message(
       crayon::red(
         cli::symbol$warning,
-        'Use mzR for files converted with pwiz version <= 3.0.2000'
+        'Use mzR for files converted with pwiz version <= 3.0.20000'
       )
     )
     return(invisible(NULL))
@@ -39,8 +39,7 @@ openFile <- function(mzml_file)
   id_refs <- stringr::str_replace_all(id_refs , ',', '.')
 
   chrom_blocks <-
-    xml_tmp %>% xml2::xml_find_all(., "//d1:chromatogram") %>%
-    purrr::map(., xml2::xml_children)
+    xml_tmp %>% xml2::xml_find_all(., "//d1:chromatogram")
 
   parse_ref <- tibble::tibble(idRef = id_refs, mode = NA)
   parse_ref$mode[parse_ref$idRef == 'TIC'] <- 'TIC'
@@ -190,7 +189,6 @@ openFile <- function(mzml_file)
 
   file_header$precursorIsolationWindowLowerOffset <- as.numeric(file_header$precursorIsolationWindowLowerOffset)
   file_header$precursorIsolationWindowUpperOffset <- as.numeric(file_header$precursorIsolationWindowUpperOffset)
-  file_header$precursorCollisionEnergy[file_header$precursorCollisionEnergy == 0] <- NA
 
 
   return(list(peaks = peaks, header = data.frame(file_header)))
