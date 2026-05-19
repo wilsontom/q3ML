@@ -70,11 +70,11 @@ parseChromNode <- function(x, mode)
       "./d1:cvParam[@name='positive scan' or @name='negative scan']"
     ) %>% xml2::xml_attr("name")
 
-    if (plong == 'positive scan') {
+    if (!is.na(plong) && plong == 'positive scan') {
       polarity <- 1
     }
 
-    if (plong == 'negative scan') {
+    if (!is.na(plong) && plong == 'negative scan') {
       polarity <- 0
     }
 
