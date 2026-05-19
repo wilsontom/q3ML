@@ -53,13 +53,19 @@ openFile <- function(mzml_file)
   precisionCheck <- function(accession)
   {
     if ('MS:1000523' %in% accession) {
-      p <- 64
+      return(64)
     }
     if ('MS:1000521' %in% accession) {
-      p <- 32
+      return(32)
     }
 
-    return(p)
+    stop(
+      sprintf(
+        "Unsupported binary precision accession(s): %s",
+        paste(accession, collapse = ", ")
+      ),
+      call. = FALSE
+    )
   }
 
   peaks <- list()

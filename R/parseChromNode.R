@@ -13,6 +13,10 @@
 
 parseChromNode <- function(x, mode)
 {
+  if (!mode %in% c("SRM", "TIC")) {
+    stop("`mode` must be either 'SRM' or 'TIC'.", call. = FALSE)
+  }
+
   chrom_node <- if (inherits(x, "xml_node") &&
                     identical(xml2::xml_name(x), "chromatogram")) {
     x

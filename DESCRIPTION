@@ -1,11 +1,14 @@
 Package: q3ML
 Type: Package
-Title: Open and Parse SRM mzML files from Thermo Triple Quadruploe Mass Spectrometers
+Title: Open and Parse SRM mzML Files from Thermo Triple Quadrupole Instruments
 Version: 0.1.0
 Authors@R: c(
     person("Tom", "Wilson", , "tpw2@aber.ac.uk", c("aut", "cre")))
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: Parses selective reaction monitoring (SRM) mzML chromatograms
+    exported from Thermo triple quadrupole instruments. The package is
+    intended as a fallback for newer ProteoWizard-generated mzML files where
+    chromatogram data cannot be decoded through 'mzR', while preserving output
+    structures that are easy to compare with 'mzR' headers and chromatograms.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true

@@ -171,6 +171,11 @@ test_that("parseChromNode validates chromatogram structure", {
   xml <- xml2::read_xml(fixture)
 
   expect_error(
+    parseChromNode(xml2::xml_find_all(xml, "//d1:chromatogram")[[2]], "BAD"),
+    "`mode` must be either 'SRM' or 'TIC'."
+  )
+
+  expect_error(
     parseChromNode("not-a-node", "SRM"),
     "`x` must describe a chromatogram node."
   )
@@ -198,5 +203,25 @@ test_that("parseChromNode validates chromatogram structure", {
   expect_error(
     parseChromNode(duplicate_time_chrom, "SRM"),
     "Unable to find a unique binary data array"
+  )
+})
+
+test_that("openFile validates binary precision accessions", {
+  bad_precision_fixture <- write_fixture_variant(
+    fixture_file("QC01_pwiz3_0_2.mzML"),
+    function(xml) {
+      precision <- xml2::xml_find_first(
+        xml,
+        "//d1:binaryDataArray/d1:cvParam[@accession='MS:1000523']"
+      )
+      xml2::xml_set_attr(precision, "accession", "MS:9999999")
+      xml2::xml_set_attr(precision, "name", "unsupported precision")
+    }
+  )
+  on.exit(unlink(bad_precision_fixture), add = TRUE)
+
+  expect_error(
+    openFile(bad_precision_fixture),
+    "Unsupported binary precision accession"
   )
 })
