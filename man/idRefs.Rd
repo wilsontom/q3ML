@@ -26,3 +26,4 @@ head(xmlRefs)
 [5] "SRM SIC 179.022,107.007" "SRM SIC 179.022,134.006"
  }
 }
+\keyword{internal}

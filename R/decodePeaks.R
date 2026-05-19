@@ -6,6 +6,7 @@
 #' @param compression compression type (default = "none")
 #' @param size a numeric value for the number of bytes per element in the byte stream
 #' @return a numeric vector
+#' @keywords internal
 
 decodePeaks <- function(x, compression = "none", size)
 {

@@ -19,3 +19,4 @@ a numeric vector
 \description{
 Decode a \code{binaryDataArray} into a vector of either time or intensity
 }
+\keyword{internal}

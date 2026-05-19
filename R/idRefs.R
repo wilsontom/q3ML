@@ -4,7 +4,7 @@
 #'
 #' @param xmlDoc a `xml` document
 #' @return a character vector of all available `idRefs`
-#'
+#' @keywords internal
 #' @examples \dontrun{
 #' library(xml2)
 #' xmlDoc <- read_xml("example_file.mzML")

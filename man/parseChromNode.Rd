@@ -29,3 +29,4 @@ a list of two elements
 \description{
 Parse the XML nodeset of a SRM chromatogram
 }
+\keyword{internal}

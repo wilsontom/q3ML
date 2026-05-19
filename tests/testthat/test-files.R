@@ -20,6 +20,8 @@ write_fixture_variant <- function(path, edit_xml)
 }
 
 test_that("file versions", {
+  suppressWarnings(testthat::skip_if_not_installed("mzR"))
+
   old_fixture <- fixture_file("QC01_pwiz3_0_1.mzML")
   new_fixture <- fixture_file("QC01_pwiz3_0_2.mzML")
 

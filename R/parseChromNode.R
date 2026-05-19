@@ -9,7 +9,7 @@
 #'  * **intensity**
 #'    * `attributes`
 #'    * `raw`
-#' @export
+#' @keywords internal
 
 parseChromNode <- function(x, mode)
 {
