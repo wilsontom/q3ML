@@ -246,3 +246,35 @@ test_that("openFile validates binary precision accessions", {
     "Unsupported binary precision accession"
   )
 })
+
+test_that("openFile handles optional header fields", {
+  optional_fields_fixture <- write_fixture_variant(
+    fixture_file("QC01_pwiz3_0_2.mzML"),
+    function(xml) {
+      optional_names <- c(
+        "collision energy",
+        "isolation window lower offset",
+        "isolation window upper offset"
+      )
+
+      optional_params <- xml2::xml_find_all(
+        xml,
+        paste0(
+          "//d1:precursor//d1:cvParam[@name='collision energy']",
+          " | //d1:product//d1:cvParam[@name='isolation window lower offset']",
+          " | //d1:product//d1:cvParam[@name='isolation window upper offset']"
+        )
+      )
+
+      expect_setequal(xml2::xml_attr(optional_params, "name"), optional_names)
+      xml2::xml_remove(optional_params)
+    }
+  )
+  on.exit(unlink(optional_fields_fixture), add = TRUE)
+
+  result <- openFile(optional_fields_fixture)
+
+  expect_true(all(is.na(result$header$precursorCollisionEnergy)))
+  expect_true(all(is.na(result$header$productIsolationWindowLowerOffset)))
+  expect_true(all(is.na(result$header$productIsolationWindowUpperOffset)))
+})

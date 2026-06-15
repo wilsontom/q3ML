@@ -11,9 +11,9 @@ Description: Parses selective reaction monitoring (SRM) mzML chromatograms
     structures that are easy to compare with 'mzR' headers and chromatograms.
 License: GPL (>= 3)
 Encoding: UTF-8
-LazyData: true
 Depends:
-  magrittr
+    R (>= 3.5.0),
+    magrittr
 Imports:
   xml2,
   dplyr,
